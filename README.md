@@ -1,0 +1,1 @@
+Lecture notes of CS839: Advanced Nonlinear Optimization in UW-Madison (Instructor: Jelena Diakonikolas)

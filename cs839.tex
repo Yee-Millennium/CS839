@@ -1,0 +1,393 @@
+\documentclass[11pt]{article}
+
+\usepackage{preamble}
+\input{math_commands.tex}
+
+\title{Notes of CS 839: Advanced Nonlinear Optimization\\Instructor: Jelena Diakonikolas}
+\author{YI WEI}
+\date{Sep 2024}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Vector Space}
+
+\yee{TODO: Notes of Sep 4.}
+
+\DATE{Sep 6, 2024}
+\begin{example}
+    \begin{enumerate}
+        \item Induced matrix norms 
+                $A \in \R^{m \times n} $
+                Let $\| \cdot \|_{a} $ be any norm in $\mathbb{R}^n, \| \cdot  \| _{b}$ be any norm in $R^m$,
+                $\| A \|_{a,b} = \max_{x \in \mathbb{R}^n: \| x\|_{a} \le 1 } \| Ax \|_{b} $ \\
+                In particular, if $\| \cdot \|_{a} $ and $\| \cdot \|_{b}$ are $l_{p}$ norms:
+                \begin{enumerate}
+                    \item $a=b=2 \to $ operator/spectral norm
+                    \item $a=b=1$:
+                            \begin{align}
+                                \| A \|_{1,1} &= \max_{x \in \mathbb{R}^n, \| x \|_{1} \le 1} \| Ax \|_{1} \\
+                                    &= \max_{1 \le j \le n}\sum_{i=1}^{n}| A_{ij} |
+                            \end{align}
+                            It's called "max abs column sum"
+                    \item $a=b=\infty$:
+                            \begin{align*}
+                                \| A \| _{\infty,\infty} = \max_{x \in \mathbb{R}^n, \| x \| _{\infty} \le 1}
+                                        \| Ax \| _{\infty} = \max_{1 \le i \le m} \sum_{j=1}^{n}|A_{ij}|
+                            \end{align*}
+                            It's called "max abs row sum norm". 
+                    \item $a=1, b=\infty$:
+                            \begin{align*}
+                                \| A \| _{1,\infty} = \max_{x\in \mathbb{R}^n, \| x \| _{1} \le 1} \| Ax \|_{\infty}
+                                        = \max_{1 \le i \le m, 1 \le j \le n} |A_{ij}|
+                            \end{align*}
+                            where $\| Ax \| _{\infty} = \begin{bmatrix} A_{1}x \\ A_{2}x \\ \vdots \\ A_{n}x \end{bmatrix}$
+                \end{enumerate}
+    \end{enumerate}
+\end{example}
+
+\subsection{Cartesian Product of Vector Space}
+Given $m \ge 2$ vector spaces $\mathbb{E}_1, \ldots , \mathbb{E}_{m}$ equipped w/ inner products 
+$\langle \cdot, \cdot  \rangle, \ldots , \langle \cdot, \cdot \rangle$, their Cartesian product is the vector
+space $\mathbb{E} = \mathbb{E}_1 \times \cdots \times \mathbb{E}_{n}$ containing all m-tuples $( \vv_1, \ldots ,\vv_m ) $ for which basic operations are defined as:
+\begin{enumerate}
+    \item Addition: $( \vv_{1}, \ldots ,\vv_m ) + ( \vw_1, \ldots ,\vw_{m} ) $ = 
+    \item Scaler multiplication: $\alpha \in \mathbb{R}, \alpha (\vv_{1}, \ldots ,\vv_{m}) = 
+            (\alpha \vv_{1}, \ldots , \alpha \vv_{m})$
+\end{enumerate}
+The inner product on $\mathbb{E}$ is defined by:
+\begin{align*}
+    \langle (\vv_{1}, \ldots ,\vv_{m}), (\vw_{1}, \ldots ,\vw_{m}) \rangle = \sum_{i=1}^{m}\langle v_{i}, w_{i} \rangle _{\mathbb{E}_{i}}
+\end{align*}
+
+If $\mathbb{E}_{i}, i \in \{ 1, \ldots ,m \} $ are endowed w/ norms $\|  \| _{E_{i}}$ there a different 
+ways of choosing a norm on $\mathbb{E}$
+\begin{example}
+    \item $\| (\vv_{1}, \ldots ,\vv_{m}) \| = (\sum_{i=1}^{m}\| v_{i} \|_{\mathbb{E}_{i}}^p)^{\frac{1}{p}} $
+    \item $\| (\vv_1, \ldots ,\vv_{m}) \| = ( \sum_{i=1}^{m} w_{i}\| v_{i} \|_{\mathbb{E}_{i}}^2  ) $
+\end{example}
+
+
+\subsection{Linear Transformation}
+\begin{definition}
+    Given two vector spaces $\mathbb{E}$, $\mathbb{V}$, $f: \mathbb{E} \to \mathbb{V}$ is a linear transformation if
+    \begin{align*}
+        \forall x,y \in \mathbb{E}, \forall \alpha, \beta \in \mathbb{R}:\\
+        A(\alpha x + \beta y) = \alpha A(x) + \beta A(y)
+    \end{align*}
+\end{definition}
+
+\begin{example}
+    \begin{enumerate}
+        \item All linear transformations from $\mathbb{R}^n \to \mathbb{R}^m$ are of the from
+            \begin{align*}
+                A(x) = Ax \quad \text{for some matrix } A \in \mathbb{R}^{m \times n}
+            \end{align*}
+        \item All linear transformations from $\mathbb{R}^{n \times n} \to \mathbb{R}^k$ are of the form:
+            \begin{align*}
+                A(X) = \begin{bmatrix} \text{trace}(A_{1}^\top X) \\ \text{trace}(A_{2}^\top X) \\ 
+                                \vdots \\ \text{trace}(A_{n}^\top X) \end{bmatrix} \quad \forall \; X \in \mathbb{R}^{m \times n}
+            \end{align*}
+            some matrices $A_{1}, \ldots ,A_{k} \in \mathbb{R}^{m \times n}$
+        \item The identity transformation $\mathcal{I}: \mathbb{E} \to \mathbb{E}$ is defined by $\mathcal{I}(x) = x$
+    \end{enumerate}
+\end{example}
+
+\subsection{The Dual Space}
+\begin{definition}
+    The dual space of a vector space $\mathbb{E}$ is the space of all linear functionals on $\mathbb{E}$
+\end{definition}
+
+For inner product spaces, (Riez Representation) 
+for any linear functional $f$, $\exists v \in \mathbb{E}$ s.t $f(x) = \langle \vv,\vx \rangle
+    \quad \forall \vx \in \mathbb{E}$. \\
+We write $\vv \in \mathbb{E}^*$ (notation). \\
+Elements of $\mathbb{E}^*$ and $\mathbb{E}$ are the same if $\mathbb{E}$ we use a norm $\| \cdot \| $,
+then in $\mathbb{E}^*$ we use the norm dual to it, defined by (dual norm )
+\begin{align*}
+    \forall \vy \in \mathbb{E}^*: \| \vy \|_{*} := \max_{\vx \in \mathbb{E}: \| x \| \le 1 } \langle \vy,\vx \rangle
+\end{align*}
+
+
+\begin{theorem}
+    Generalized Cauchy-Schwarz:
+    \begin{align*}
+        \forall \vx \in \mathbb{E}, \forall \vy \in \mathbb{E}^*:
+            \| \langle \vx,\vy \rangle \| \le \| \vx \| \| \vy \| _{*}
+    \end{align*}
+\end{theorem}
+
+
+\begin{theorem}
+    Euclidean norms are self-dual. We say that Euclidean space "self-dual" and write $\mathbb{E} = \mathbb{E}^*$
+\end{theorem}
+
+\begin{example}
+    \begin{enumerate}
+        \item In $\mathbb{R}^d$, with $\langle \vx, \vy \rangle = \vx^\top \vy$
+            \begin{enumerate}
+                \item The norm dual to $l_{p}$ norm for $p > 1$ is the norm $l_{p}^*$ where 
+                    $\frac{1}{p} + \frac{1}{p^*} = 1$. $l_1$ and $l_{\infty}$ are dual to each other.
+                \item The norm dual to $\| \cdot \|_{Q}$ for $Q$ symmetric, positive definite is 
+                        $\| \cdot \|_{Q^{-1}}$
+                        \begin{align*}
+                            \| \vx \|_{Q^{-1}} = \Big(\vx^\top Q^{-1} x \Big)^{\frac{1}{2}}
+                        \end{align*}
+                        If $Q = \text{diag}(w_{1}, \ldots ,w_{d})$ for positive $w_{1}, \ldots ,w_{d}$,
+                        then $\| \vx \|_{Q^{-1}} = \Big(\sum_{i=1}^{d} \frac{1}{w_{i}}\vx_{i}^2\Big)^{\frac{1}{2}}$
+            \end{enumerate}
+        \item $E = E_1 \times \cdots \times E_m$, with $\|  \cdot \|_{E_1}, \ldots , \|  \cdot \| _{E_{m}}$
+            \begin{align*}
+                \| (\vv_{1}, \ldots ,\vv_{m}) \|_{\mathbb{E}} = \Big(\sum_{i=1}^{m} w_{i} \| \vv_{i} \|_{\mathbb{E}_{i}}^2 \Big)^{\frac{1}{2}}\\
+                \| (\vw_{1}, \ldots ,\vw_{m}) \|_{\mathbb{E}^*} = \Big(\sum_{i=1}^{m} \frac{1}{w_{i}} \| \vu_{i} \|_{\mathbb{E}_{i}^*}^2 \Big)^{\frac{1}{2}}
+            \end{align*}
+    \end{enumerate}
+\end{example}
+
+\begin{theorem}
+    Bidual space = dual space to $\mathbb{E}^*$. \\
+    In finite vector space, $\mathbb{E}^{**} = \mathbb{E}$
+\end{theorem}
+
+\begin{theorem}
+    $\langle A\vx,\vy \rangle \le \| A \|_{a,b} \| \vx \|_{a} \| \vy \|_{b}$ if $\| \cdot  \|_{a} $
+        and $\| \cdot  \| _{b}$ are dual to each other.
+\end{theorem}
+
+
+\subsection{Adjoint Transformation}
+\begin{definition}
+    Given vector space $\mathbb{E}$ and $\mathbb{V}$, and a linear transformation $A: \mathbb{E} \to \mathbb{V}$,
+        the adjoint transformation $A^\top: \mathbb{V}^* \to \mathbb{E}^*$ is defined by
+        \begin{align*}
+            \langle \vy, A(x) \rangle = \langle A^\top(y), \vx \rangle
+        \end{align*}
+\end{definition}
+
+
+\begin{example}
+    In particular,
+    \begin{enumerate}
+        \item If $\mathbb{E} = \mathbb{R}^n, \mathbb{V} = \mathbb{R}^m$, $\langle \vx,\vy \rangle = \vx^\top \vy$,
+            then, $A(x) = Ax$ for some $A \in \mathbb{R}^{m \times n}$ and $A^\top (y) = A^\top \vy$
+        \item $\mathbb{E} = \mathbb{R}^{m \times n}, \mathbb{V} = \mathbb{R}^k$
+    \end{enumerate}
+\end{example}
+
+\DATE{Sep 13, 2024}
+Given $A: \mathbb{E} \to \mathbb{V}$, $\| \cdot  \|_{\mathbb{E}}, \| \cdot  \|_{\mathbb{E}} $, we define the norm
+$\| A \| =\sup_{x\in \mathbb{E}, \| x \|_{\mathbb{E}} \le 1 } \| A(x) \|_{\mathbb{V}} $
+
+
+\section{Extended Real-Valued Functions}
+\begin{definition}
+    functions that map some real vector space $(\mathbb{E}, \langle \cdot ,\cdot  \rangle), \| \cdot  \| $ to
+    the extended real line -either $\mathbb{R} \bigcup \{ -\infty,+\infty \} \equiv [-\infty,+\infty]$ or 
+    $\mathbb{R} \bigcup \{ +\infty \} \equiv (-\infty,+\infty]$
+\end{definition}
+
+\begin{align*}
+    \begin{aligned}
+        \min_{x \in \mathbb{E}} &\quad f(x)
+    \end{aligned}
+\end{align*}
+
+Consider this problem, why do we even want to include $+\infty$
+\begin{enumerate}
+    \item $f$ is not everywhere defined  on $\mathbb{E}$, I can assign it to $+\infty$ at points where it's not
+    defined. So when it becomes well-defined on all $\mathbb{E}$.
+    
+    Here we define the domain $=$ effective domain:
+    \begin{align*}
+        dom(f) = \{ x \in \mathbb{E}: f(x) < +\infty \}
+    \end{align*}
+    \item We can think of all optimization problems whether constrained or unconstrained, as unconstrained optimization
+    problem.
+    \begin{align*}
+        \begin{aligned}
+            \min_{x\in \mathcal{X}}  f(x) \iff \min_{x \in \mathbb{E}} f(x) + \delta_{\mathcal{X}}(x)\\
+            \text{where } \delta(x) = 
+            \begin{cases} 
+            0, &  for x \in \mathcal{X}\\ 
+            +\infty, &  o.w. 
+            \end{cases}
+        \end{aligned}
+    \end{align*}
+\end{enumerate}
+
+"Rules" for dealing with $\pm \infty$ and $a \in \mathbb{R}$:
+\begin{enumerate}
+    \item $a+\infty = +\infty + a = +\infty$
+    \item $a-\infty = -\infty + a = -\infty$
+    \item 
+    \begin{align*}
+        a \cdot \infty = 
+        \begin{cases} 
+        \infty, &if \;a > 0  \\ 
+        -\infty, &if \;a < 0
+        \end{cases}
+    \end{align*}
+    \item $0 \cdot \pm \infty = 0$
+    \item $-\infty < a < \infty \quad \forall a \in \mathbb{R}$
+\end{enumerate}
+
+\subsection{Closed Functions}
+\begin{definition}
+    $epi(f) := \{ (x,y): x \in \mathbb{E}, y \in \mathbb{R}, f(x) \le y \}$
+\end{definition}
+
+\begin{definition}
+    A function $f: \mathbb{E} \to [-\infty,\infty]$ is said to be closed if $epi(f)$ is closed.
+\end{definition}
+
+\begin{proposition}
+    For $C \subseteq \mathbb{E}$, $\sigma_{C}(x)$ is closed $\iff C$ is closed.
+\end{proposition}
+\begin{proof}
+    $epi(C) = C \times \mathbb{R}_{+}$
+\end{proof}
+
+\begin{remark}
+    $f$ is closed $\not\iff$ $dom(f)$ is closed.
+\end{remark}
+
+\begin{example}
+    \begin{align*}
+        f(x) = \begin{cases} 
+        \frac{1}{x}, &x > 0  \\ 
+        \infty, & x \le 0   
+        \end{cases}
+    \end{align*}
+    Then $dom(f) = (0,\infty)$ is open. And we see that:
+    \begin{align*}
+        epi(f) = \{ (x,y) \in \mathbb{R}^{2}: x>0, \frac{1}{x} \le y \}
+    \end{align*}
+\end{example}
+
+\subsection{Related Concepts}
+\begin{enumerate}
+    \item Lower Semicontinuity:
+    \begin{definition}
+        $f:\mathbb{E} \to [-\infty,+\infty]$ is l.s.c. at $x \in \mathbb{E}$ if 
+        \begin{align*}
+            f(x) \le \liminf_{n \to \infty} f(x_n) 
+        \end{align*}
+        for any sequence $\{ x_n  \}_{n\ge 1} \in \mathbb{E}$ s.t.
+        $x_n \to x $ as $n \to \infty$.
+
+        f is said to be l.s.c. if it is l.s.c. at all $x \in \mathbb{E}$.
+    \end{definition}
+    \item Level set: 
+    defined for $\alpha \in \mathbb{R}, \; f:\mathbb{E} \to [-\infty,+\infty]$.
+    \begin{align*}
+        Lev(f,\alpha) = \{ x \in \mathbb{E}:f(x) \le \alpha \}
+    \end{align*}
+\end{enumerate}
+
+\begin{theorem}
+    If $f:\mathbb{E} \to [-\infty,+\infty]$. Then all of the following statements are equivalent:
+    \begin{enumerate}
+        \item $f$ is l.s.c.
+        \item $f$ is closed.
+        \item $Lev(f,\alpha)$ is closed, $\forall \alpha \in \mathbb{R}$
+    \end{enumerate}
+\end{theorem}
+
+\subsection{Operations preserving closedness}
+\begin{enumerate}
+    \item If $f: \mathbb{V} \to [-\infty,+\infty]$ is closed, $A:\mathbb{E} \to \mathbb{V}$ is a linear transformation
+    and $b \in \mathbb{V}$, then 
+    \begin{align*}
+        g(x) = f(A(x)+b) \text{ is closed.}
+    \end{align*}
+    \item If $f_1, \ldots ,f_m: \mathbb{E} \to (-\infty,+\infty]$ are closed and $\alpha_1, \ldots ,\alpha_m \in \mathbb{R}_{+}$,
+    then 
+    \begin{align*}
+        f(x) = \sum_{i=1}^{n}\alpha_{i} f_{i}(x) \text{ is closed}
+    \end{align*}
+    \item Given an index set $I$ and functions $f_i: \mathbb{E} \to (-\infty,\infty]$, $i \in I$,
+    that are closed, the function 
+    \begin{align*}
+        f(x) = \sup_{i \in I} f_{i}(x) \text{ is closed.}
+    \end{align*}
+\end{enumerate}
+
+\subsection{Closedness vs Continuity}
+Bottom line: If $f$ has closed domain + continuous over the domain $\Longrightarrow$ closed.
+
+But closed $\not\iff$ continuous over the domain.
+
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,+\infty]$ be continuous over its domain and suppose $dom(f)$ is closed
+    $\Longrightarrow$ f is closed.
+\end{theorem}
+
+\begin{proof}
+    Argue that $epi(f)$ is closed.
+
+    Take any sequence  $\{ (x_n,y_n) \}_{n\ge 1} \in epi(f)$ that converges to some $(x_{*}, y_{*})$ as $n \longrightarrow \infty$
+
+    To argue: $(x_{*}, y_{*}) \in epi(f)$: we know that $x_n \in dom(f)$, $x_n \longrightarrow x_{*}$,
+    $dom(f)$ is closed $\Longrightarrow x_{*} \in dom(f)$
+
+    By the definition of $epi(f)$:
+    \begin{align*}
+        f(x_n) \le y_n
+    \end{align*}
+    Since f is continuous over $dom(f)$ and $\{ x_n \}_{n}, x_{*} \in dom(f)$ we can take the limit $n \longrightarrow \infty$
+    \begin{align*}
+        f(x_{*}) \le y_{*}\\
+        \Longrightarrow (x_{*},y_{*}) \in epi(f)
+    \end{align*}
+\end{proof}
+
+\begin{example}[closed $\not\Longrightarrow$ continuous on its domain]
+ \item 
+ \begin{align}
+    f_{\alpha}(x) = \begin{cases} 
+    \alpha, &  x=0\\ 
+    x, &   0 < x \le 1\\
+    \infty, & elsewhere
+    \end{cases}
+ \end{align}
+ When $\alpha < 0$, then it's l.s.c., i.e., closed, but it's not continuous.
+ \item $l_{0}$ "norm"
+ \begin{align*}
+    f(x) = \| \vx \| _{0} = |\{ i:\vx_{i} \neq 0 \}| 
+ \end{align*}
+ $f$ is not continuous but it's closed.
+
+ \begin{align*}
+    f(x) = \sum_{i=1}^{d}I(\vx_{i})
+ \end{align*}
+ where 
+ \begin{align*}
+    I(y) = \begin{cases} 
+    0, & y=0 \\ 
+    1, & y\neq 0  
+    \end{cases}
+ \end{align*}
+ We know 
+ \begin{align*}
+    Lev(I,\alpha) = \begin{cases} 
+    \emptyset , &  \alpha < 0\\ 
+    \{ 0 \}, &   0 \le \alpha < 1\\
+    \mathbb{R}, & \alpha \ge 1
+    \end{cases}
+ \end{align*}
+ Then $I$ is closed. $\Longrightarrow$ the sum of them is closed.
+\end{example}
+
+
+
+
+
+
+
+
+
+
+\end{document}
