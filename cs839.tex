@@ -267,7 +267,7 @@ Consider this problem, why do we even want to include $+\infty$
     \end{align*}
 \end{example}
 
-\subsection{Related Concepts}
+\subsubsection{Related Concepts}
 \begin{enumerate}
     \item Lower Semicontinuity:
     \begin{definition}
@@ -296,7 +296,7 @@ Consider this problem, why do we even want to include $+\infty$
     \end{enumerate}
 \end{theorem}
 
-\subsection{Operations preserving closedness}
+\subsubsection{Operations preserving closedness}
 \begin{enumerate}
     \item If $f: \mathbb{V} \to [-\infty,+\infty]$ is closed, $A:\mathbb{E} \to \mathbb{V}$ is a linear transformation
     and $b \in \mathbb{V}$, then 
@@ -315,7 +315,7 @@ Consider this problem, why do we even want to include $+\infty$
     \end{align*}
 \end{enumerate}
 
-\subsection{Closedness vs Continuity}
+\subsubsection{Closedness vs Continuity}
 Bottom line: If $f$ has closed domain + continuous over the domain $\Longrightarrow$ closed.
 
 But closed $\not\iff$ continuous over the domain.
@@ -496,9 +496,9 @@ What is we are not optimizing over a compact set.
     \end{align*}
 \end{example}
 
-\begin{theorem}[Convexity under partial minimization]
+\begin{theorem}[Convexity under partial minimization] \label{thm:2.8}
     Let $f: \mathbb{E}\times \mathbb{V} \to (-\infty,\infty]$ be a convex function s.t.
-    $\forall  x \in \mathbb{E}, \exists y \in \mathbb{V}: \quad f(x,y) < \infty$.
+    $\forall  x \in \mathbb{E}, \,\exists y \in \mathbb{V}: \; f(x,y) < \infty$.
     Let $g: \mathbb{E} \to [-\infty,\infty)$ be defined 
     \begin{align*}
         g(x) := \inf_{y \in \mathbb{V}}f(x,y)
@@ -511,7 +511,7 @@ What is we are not optimizing over a compact set.
         g((1-\alpha)x_1 + \alpha x_2) \le (1-\alpha)g(x_1) + \alpha g(x_2)
     \end{align*}
     \begin{enumerate}
-        \item[Case 1:] $g(x_1),g(x_2) > -\infty$. Take any $\epsilon > 0$, then $\exists 
+        \item[Case 1:] $g(x_1),g(x_2) > -\infty$. Take any $\epsilon > 0$, then $\exists \,
         y_1,y_2 \in \mathbb{E}$ s.t.
         \begin{align*}
             f(x_1,y_1) \le g(x_1) + \epsilon\\
@@ -519,7 +519,7 @@ What is we are not optimizing over a compact set.
         \end{align*}
         $f$ is convex so:
         \begin{align*}
-            f((1-\alpha)x_1+\alpha x_2, (1-\alpha)x_1 + \alpha x_2) \le (1-\alpha)f(x_1,y_1) + \alpha
+            f((1-\alpha)x_1+\alpha x_2, (1-\alpha)y_1 + \alpha y_2) \le (1-\alpha)f(x_1,y_1) + \alpha
             f(x_2,y_2) \\
             \le (1-\alpha)g(x_1) + \alpha g(x_2) + \epsilon
         \end{align*}
@@ -554,7 +554,333 @@ What is we are not optimizing over a compact set.
         h_1 \square h_2(x) = \inf_{u \in \mathbb{E}}\{ h_1(u)+h_2(x-u) \}
     \end{align*}
 \end{definition}
-    
+\begin{remark}
+    It's important for proximal point method. You smoothe functions by infimal convolution with 
+    some good functions like quadratic functions.
+\end{remark}
+
+\vspace{15mm}
+\DATE{Sep 20, 2024}
+\vspace{15mm}
+
+\begin{theorem}
+    Let $h_1: \mathbb{E} \to (-\infty,\infty]$ be proper and convex, $h_2: \mathbb{E}
+    \to \mathbb{R}$ be a real-valued convex function. Then $h_1 \square h_2$ is convex.
+\end{theorem}
+\begin{proof}
+    Define $f(x,y) = h_1(y) + h_2(x-y)$, $g(x) = \inf_{y\in \mathbb{E}}f(x,y) = 
+    (h_1 \square h_2)(x)$
+
+    Notice that $f$ is convex since it's the sum of two convex functions, and $h_2: \mathbb{E} \times 
+    \mathbb{E} \to \mathbb{R}$ is convex since $x-y$ is a linear transform of $x,y$.
+
+    Want to show that $\forall \vx \in \mathbb{E},\, \exists \vy \in \mathbb{E}$ s.t.
+    \begin{equation}
+        h_1(y) + h_2(x-y) < \infty
+    \end{equation}
+    It's obvious since $h_1$ is proper and $h_2$ is real-valued.
+
+    Then by Theorem~\ref{thm:2.8}, $f$ is convex.
+\end{proof}
+
+\begin{example}
+    \item If $C \subseteq \mathbb{E} \neq \emptyset$ is convex, then 
+    \begin{align*}
+        d_{C}(x) = \inf_{y \in C} \| \vy - \vx \| 
+    \end{align*}
+    is convex. (This holds for any norm.) 
+    \begin{remark}
+        $\| \cdot  \| $ is convex.
+    \end{remark}
+    We write 
+    \begin{align*}
+        d_{C}(x) = \inf_{\vy \in \mathbb{E}}\{ \| \vy-\vx \|  + \delta_{C}(y)\}\\
+        = \underbrace{\delta_{C}}_{\text{convex  \& proper}}  \square \underbrace{\| \cdot  \| }_{\text{convex \& 
+        real-valued}}
+    \end{align*}
+    Notice that
+    $\delta_{C}(\cdot )$ is convex when $C$ is a convex set.
+\end{example}
+
+\subsubsection{Continuity of convex functions}
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be convex. let $x_0 \in intdom(f)$. Then
+    $\exists \epsilon > 0$ and $L > 0$ s.t. 
+    $\underbrace{B[x_0,\epsilon]}_{\text{closed ball, centered at }x_0 \text{ of radius }\epsilon}
+    \subseteq dom(f)$ and 
+    \begin{align*}
+        \forall x \in B[x_0,\epsilon]: |f(x) - f(x_0)| \le L\| \vx_0 - \vx_{0} \| 
+    \end{align*}
+\end{theorem}
+% \begin{remark}
+%     In complexity of minimization, what problems are solvable? When we talk about complexity,
+%     we take some compact set, how many query we need? The results depend on the global $L$ are classical.
+% \end{remark}
+
+\subsection{Support Function}
+\begin{definition}
+    Let $C \subseteq \mathbb{E}$ be nonempty. Then the support function of $C$ is defined by
+    \begin{align*}
+        \sigma_{C}: \mathbb{E}^{*} \to (-\infty,\infty]\\
+        \sigma_{C}(y) = \sup_{\vx \in C} \langle \vx,\vy \rangle \\
+        \text{Or: } \sigma_{C}(y) = \sup_{\vx \in \mathbb{E}}\{ \langle \vx,\vy \rangle 
+        - \delta_{C}(x)\}
+    \end{align*}
+\end{definition}
+
+\begin{lemma}
+    Let $C \subseteq \mathbb{E}$ be a nonempty set. Then $\sigma_{C}$ is both closed and convex.
+\end{lemma}
+
+\subsubsection{Operations on sets}
+\begin{enumerate}
+    \item Minkowski sum:
+    \begin{align*}
+        A, \,B \subseteq \mathbb{E}, A+B = \{ a+b: a\in A, b\in B \}
+    \end{align*}
+    \item for $\alpha \in \mathbb{R}$, $A \subseteq \mathbb{E}$:
+    \begin{align*}
+        \alpha A = \{ \alpha a: a\in A \}
+    \end{align*}
+\end{enumerate}
+
+\begin{proposition}[Properties of support functions:]
+    \begin{enumerate}
+        \item positive homogeneity:
+        \begin{align*}
+            \forall C \subseteq \mathbb{E}, C \neq \emptyset, \forall \vy \in \mathbb{E}^{*},\,
+            \forall  \alpha \ge 0:\\
+            \sigma_{C}(\alpha y) = \alpha \sigma_{C}(y)\\
+            \sigma_{\alpha C}(\vy) = \alpha \sigma_{C}(\vy)
+        \end{align*}
+        \item subadditivity: $\forall C \subseteq \mathbb{E}, \, C \neq \emptyset$,
+        \begin{align*}
+            \forall vy_1,\,vy_2 \in \mathbb{E}^{*}: \sigma_{C}(vy_1+vy_2) \le \sigma_{C}(\vy_1) +
+            \sigma_{C}(\vy_2)
+        \end{align*}
+        \item $\forall A,\,B \subseteq  \mathbb{E}$, $A \bigcup B \neq \emptyset$, $\forall \vy \in
+        \mathbb{E}^{*}:$
+        \begin{align*}
+            \sigma_{A+B}(\vy) = \sigma_{A}(\vy) + \sigma_{B}(\vy)
+        \end{align*}
+    \end{enumerate}
+\end{proposition}
+
+\begin{example}
+    \begin{enumerate}
+        \item $C = conv\{ \vb_1,, \ldots ,\vb_m \}, \; \vb_i \in \mathbb{E} \quad \forall\, i$, then
+        \begin{align*}
+            \sigma_{C}(\vy) = \max_{1 \le i \le m} \langle \vb_i,\vy \rangle
+        \end{align*}
+        \item Let $K \subseteq \mathbb{E}$ be a cone set s.t. if $\vx \in K$, then $\forall r > 0,
+        \; r\vx \in K$.
+
+        The polar cone of $K$ is defined by:
+        \begin{align*}
+            K^{o} := \{ \vy \in \mathbb{E}^{*}: \langle \vy,\vx \rangle \le 0, \; \forall \,\vx \in K \}
+        \end{align*}
+        Then $\sigma_{K}(\vy) = \delta_{K^{o}}(y)$
+
+        \item $\mathbb{E} = \mathbb{R}^{d}$, $C = \mathbb{R}_{+}^{d}$
+        \begin{align*}
+            \sigma_{\mathbb{R}_{+}^{d}}(\vy) = \delta_{\mathbb{R}_{-}^{d}}(\vy)
+        \end{align*}
+
+        \item $\mathbb{E} = \mathbb{R}^{d}, \,A \in \mathbb{R}^{n\times d}$, $
+        S = \{ \vx \in \mathbb{R}^{d}: \, Ax \le 0 \}$
+        \begin{align*}
+            \sigma_{S}(\vy) = \delta_{S^{o}}(\vy) \\
+            \text{where } S^{o} = \{ A^{\top}\lambda: \lambda \in \mathbb{R}_{+}^{n} \}
+        \end{align*}
+        \item $C = B_{\| \cdot  \| }[0,1] = \{ \vx \in \mathbb{E}: \| \vx \| \le 1 \}$
+        \begin{align*}
+            \sigma_{C}(\vy) = \sup_{\vx \in \mathbb{E}: \| \vx \| \le 1}\langle \vy,\vx \rangle 
+            = \| \vy \|_{*}
+        \end{align*}
+    \end{enumerate}
+\end{example}
+
+\begin{proposition}
+    If $A \subseteq  \mathbb{E}, \, A \neq \emptyset,$ then
+    \begin{enumerate}
+        \item $\sigma_{A} = \sigma_{cl}(A)$ where $cl(A) = $ closure of $A$
+        \item $\sigma_{A} = \sigma_{conv}(A)$ where $conv(A) = $ convex hull of $A$
+    \end{enumerate}
+    If $A,\, B \subseteq \mathbb{E}$ are closed, convex and nonempty, then 
+    \begin{align*}
+        A = B \iff \sigma_{A} = \sigma_{B}
+    \end{align*}
+\end{proposition}
+
+
+\section{Subdifferentiation}
+\begin{definition}
+    The directional derivative of a function $f: \mathbb{E} \to [-\infty,\infty]$ at $\bar{\vx} \in \mathbb{E}$
+    in a direction $\vz \in \mathbb{E}$ is:
+    \begin{align*}
+        f'(\bar{\vx}; \vz) = \lim_{\alpha \to 0} \frac{f(\bar{\vx}+\alpha \vz) - f(\bar{\vx})}{\alpha}
+    \end{align*}
+    when this limit exists.
+
+    When the directional derivative $f'(\bar{\vx}; \vz)$ is linear in $\vz$, then we say that 
+    $f$ is Gateaux differentiable.
+
+    $\mathbb{E} = \mathbb{R}^{d}$. $\exists g \in \mathbb{E}^{*}$ s.t. $f'(\vx,\vz) = \langle 
+        g, \vz
+    \rangle$, we say $g$ is the Gateaux derivative.
+
+    If $f$ is differentiable on every point of $C \subseteq \mathbb{E}$, we say that $f$ is differentiable on
+    $C$.
+\end{definition}
+
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be a proper convex function and let $\vx \in intdom(f)$.
+    Then $\forall \vz in \mathbb{E}$, the directional derivative $f'(\vx;\vz)$ exists.
+
+\end{theorem}
+\begin{exercise}
+    Show that if $f$ attains $-\infty$, then it would be $-\infty$ anywhere.
+\end{exercise}
+
+\begin{lemma}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be a proper convex function and let $\vx \in intdom(f)$. Then
+    \begin{enumerate}
+        \item $\vz \mapsto f'(\vx;\vz)$ is convex;
+        \item $\forall \lambda > 0, \forall \vz \in \mathbb{E}: f'(\vx;\lambda \vz) = \lambda f'(\vx;\vz)$
+    \end{enumerate}
+\end{lemma}
+\begin{proof}
+    \begin{enumerate}
+        \item Take $\vz_1;\vz_2 \in \mathbb{E}$ and $\lambda \in (0,1)$.
+        \begin{align*}
+            f'(\vx;\lambda \vz + (1-\lambda)) = \lim_{\alpha \to 0} \frac{
+                f(\vx + \alpha (\lambda \vz_1 + (1-\lambda)\vz_2) - f(\vx))
+            }{\alpha}\\
+            = \lim_{\alpha \to 0} \frac{f(\lambda(\vx + \alpha \vz_1) + (1-\lambda)(\vx + \alpha \vz_2))
+            - f(\vx)}{\alpha}\\
+            \le \lambda \lim_{\alpha \to 0} \frac{f(\vx + \alpha \vz_1 ) - f(x)}{\alpha} 
+            + (1-\lambda) \lim_{\alpha \to 0} \frac{f(\vx + \alpha \vz_2 ) - f(x)}{\alpha} \\
+            = \lambda f'(\vx; \vz_1) + (1-\lambda)f'(\vx;\vz_2)
+        \end{align*}
+        \item $\lambda = 0$ Trivial. Assume $\lambda > 0$:
+        \begin{align*}
+            f'(\vx;\lambda\vz) = \lambda 
+            \lim_{\alpha \to 0} \frac{f(\bar{\vx}+\lambda\alpha \vz) - f(\bar{\vx})}{\lambda\alpha}
+        \end{align*}
+    \end{enumerate}
+\end{proof}
+
+\begin{lemma}
+    Let $f: \mathbb{E} \to (-\infty, \infty]$ be a proper convex function and let
+    $\vx \in intdom(f)$. Then:
+    \begin{align*}
+        f(\vy) \ge f(\vx) + f'(\vx;\vy - \vx) \quad \forall\; \vy \in dom(f)
+    \end{align*}
+\end{lemma}
+
+\begin{proof}
+    \begin{align*}
+        f'(\vx; \vy - \vx) &= \lim_{\alpha \to 0} \frac{f((1-\alpha)\vx + \alpha\vy) - f(\vx)}{\alpha}\\
+    &\le f(\vy) - f(\vx)
+    \end{align*}
+\end{proof}
+
+\subsection{Directional derivative of a max-type function}
+
+\begin{theorem}
+    Suppose that $f(\vx) = \max_{1\le i \le m} f_i(\vx)$ where $f_1, \ldots ,f_m:
+    (-\infty,\infty]$ are proper. Let $\vx \in \bigcap_{i=1}^{m} intdom(f_i)$ and let $\vz \in \mathbb{E}$.
+    Assume that $f_i'(\vx;\vz)$ exists, $\forall \, i \in \{ 1, \ldots ,m \}$. Then:
+    \begin{align*}
+        f'(\vx;\vz) = \max_{i \in I(\vx)}f_i'(\vx;\vz),
+    \end{align*}
+    where $I(\vx) = \{ i: s.t \; f_i(\vx) = f(\vx) \}$
+\end{theorem}
+\begin{proof}
+    For any $i \in \{ 1, \ldots ,m \}$:
+    \begin{align*}
+        \lim_{\alpha \to 0^{+}}f_i(\vx + \alpha \vz) = \lim_{\alpha \to 0}
+        \Big\{ \alpha \frac{f_i(\vx + \alpha \vz) - f_i(\vx)}{\alpha} + f_i(\vx) \Big\}\\
+        = 0 \cdot f_i'(\vx; \vz) + f_i(\vx)\\
+        = f_i(\vx)
+    \end{align*}
+    By the definition of $I(\vx)$, $f_i(\vx) > f_j(\vx), \; \forall i \in I(\vx), \, j\neq I(\vx)$,
+
+    $\Longrightarrow \exists \epsilon > 0,\; \forall \,\alpha \in (0,\epsilon]$ s.t. 
+    \begin{align*}
+        f_i(\vx + \alpha\vz) > f_j(\vx + \alpha\vz) \quad \forall  i \in I(\vx), j \notin I(\vx)\\
+        \Longrightarrow \forall  \, \alpha \in (0,\epsilon]:
+        \; f(\vx + \alpha\vz) = \max_{i \le i \le m} f_i(\vx + \alpha\vz) \\
+        = \max_{i \in I(\vx)}f_i(\vx + \alpha\vz)\\
+        \Longrightarrow\forall \alpha \in (0,\epsilon]:\\
+        \frac{f(\vx + \alpha\vz) - f(\vx)}{\alpha} = 
+        \frac{\max_{i \in I(\vx)}(f_i(\vx+\alpha\vz) - f_i(\vx))}{\alpha}
+    \end{align*}
+    We obtain:
+    \begin{align*}
+        \lim_{\alpha \to 0}\frac{f(\vx + \alpha\vz) - f(\vx)}{\alpha} &= 
+        \lim_{\alpha \to 0}\max_{i \in I(\vx)}\frac{f_i(\vx + \alpha\vz) - f_i(\vx)}{\alpha}\\
+        &= \max_{i \in I(\vx)}\lim_{\alpha \to 0}\frac{f_i(\vx + \alpha\vz) - f_i(\vx)}{\alpha} \\
+        &= \max_{i \in I(\vx)}f_i'(\vx; \vz)
+    \end{align*}
+\end{proof}
+
+\subsection{Subgradient}
+\begin{definition}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be a proper function and let $\vx \in dom(f)$. A
+    vector $g \in \mathbb{E}^{*}$ is a subgradient of $f$ at $x$ if 
+    \begin{align*}
+        \forall \, \vy \in \mathbb{E}: \; \underbrace{f(\vy) \ge f(\vx) + \langle g, \vy-\vx \rangle}
+        _{\text{subgradient inequality}}
+    \end{align*}
+
+The set of all subgradient of $f$ at $\vx$ is called the subdifferential of $f$ at $\vx$
+and denoted by $\partial f(\vx)$. If $\partial f(\vx) \neq \emptyset$,
+ we say that $f$ is subdifferentiable at 
+$\vx$.
+\begin{align*}
+    \partial f(\vx) = \{ g \in \mathbb{E}^{*}: f(\vy) \ge f(\vx) + \langle g,\vy-\vx \rangle 
+    , \quad \forall \, \vy \in \mathbb{E}\}
+\end{align*}
+\begin{example}
+    \begin{enumerate}
+        \item Let $f: \mathbb{E} \to \mathbb{R}$ be defined by 
+        \begin{align*}
+            f(\vx) = ||\vx||, \quad \text{ where }||\cdot || \text{ is the norm at }\mathbb{E}
+        \end{align*}
+        Then:
+        \begin{align*}
+            \partial f(\vec{0}) = B_{\|\cdot \|_{*}}[0,1] = \{ 
+                g \in \mathbb{E}^{*}: \| g \| _{*} \le 1
+             \}
+        \end{align*}
+        \begin{proof}
+            By the def of a subgradient and subdifferential, $g \in \partial f(\vec{0})$ if and only if 
+            \begin{align*}
+                \forall \vy &\in \mathbb{E}: \; f(\vy) \ge f(\vec{0}) + \langle g,\vy \rangle\\
+                &\iff \langle g,\vy \rangle \le \| \vy \| 
+            \end{align*}
+            ($\Longrightarrow$) want to show: $\| g \| _{*} \le 1 \Longrightarrow 
+            \langle g,\vy \rangle \le \| \vy \| $
+
+            ($\Longleftarrow$) want to show: $\| g \| _{*} \le 1 \Longleftarrow 
+            \langle g,\vy \rangle \le \| \vy \| $
+        \end{proof}
+    \end{enumerate}
+\end{example}
+
+
+
+
+
+
+
+
+
+\end{definition}
+
+
+
 
 
 \end{document}
