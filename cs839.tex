@@ -833,6 +833,7 @@ What is we are not optimizing over a compact set.
         \forall \, \vy \in \mathbb{E}: \; \underbrace{f(\vy) \ge f(\vx) + \langle g, \vy-\vx \rangle}
         _{\text{subgradient inequality}}
     \end{align*}
+\end{definition}
 
 The set of all subgradient of $f$ at $\vx$ is called the subdifferential of $f$ at $\vx$
 and denoted by $\partial f(\vx)$. If $\partial f(\vx) \neq \emptyset$,
@@ -862,23 +863,517 @@ $\vx$.
             \end{align*}
             ($\Longrightarrow$) want to show: $\| g \| _{*} \le 1 \Longrightarrow 
             \langle g,\vy \rangle \le \| \vy \| $
+            Cauchy-Schwarz
 
             ($\Longleftarrow$) want to show: $\| g \| _{*} \le 1 \Longleftarrow 
             \langle g,\vy \rangle \le \| \vy \| $
+            Definition of dual norm
         \end{proof}
+
+        \DATE{Sep 27, 2024}
+
+        \item  $C \subseteq  \mathbb{E},\, C \neq \emptyset$
+        \begin{equation}
+            \delta_{C}(x) = 
+            \begin{cases} 
+            0, & if \vx \in C  \\ 
+            +\infty, & o.w.   
+            \end{cases}
+        \end{equation}
+        Then: $\partial \delta_{C}(x) = \underbrace{N_{C}(x)}_{\text{normal cone at } x} \; \forall \vx \in C$,
+        where $N_{C}(x) = \{ g \in \mathbb{E}^{*}: \langle g,\vy - \vx \rangle \le 0,\; \forall \vy \in C \}$
+        \begin{proof}
+            Consider any $\vx \in C$. Then $g \in \partial \delta_{C}(\vx)$ iff 
+            \begin{align*}
+                \forall \, \vy \in \mathbb{E}: \; \delta_{C}(\vy) \ge \delta_{C}(\vx) + \langle g,\vy - vx \rangle
+            \end{align*}
+            \begin{equation}
+                \begin{cases} 
+                \text{if }\vy \notin C, & \delta_{C}(\vy) = +\infty \\ 
+                \text{if }\vy \in C: &   \delta_{C}(\vy) = \delta_{C}(\vx) = 0 
+                \Longrightarrow \langle g,\vy-\vx \rangle \le 0
+                \end{cases}
+            \end{equation}
+        \end{proof}
+        Special case: $C = B_{\| \cdot  \| }[0,1] = \{ \vx \in \mathbb{E}: \, \| \vx \|\le 1  \}$
+            \begin{align*}
+                \forall  \vx \in C: \partial \delta_{C}(x) = N_{C}(\vx) = \{ 
+                    g: \langle g,\vy-\vx \rangle \le 0, \; \forall \vy \in C
+                 \}\\
+                 \sup_{\vy \in \mathbb{E}: \| \vy \|\le 1 }\langle g, \vy - \vx \rangle 
+                 = \| g \|_{*} - \langle g,\vx \rangle \le 0\\
+                 \partial \delta_{B\| \cdot  \| }(x) = \{ g \in \mathbb{E}^{*}: 
+                 \| g \|_{*} \le \langle g,\vx \rangle \}
+            \end{align*}
+
+        \item Subgradient of max eval: $f: \underbrace{\mathbb{S}^{d}}_{\text{the set of all d by d symm matrices}} 
+        \to \mathbb{R},\, f(X) := \lambda_{max}(X)$
+
+        Fix $X \in \mathbb{S}^{d}$ and let $\vv$ be a unit eigenvector corresponding to $\lambda_{max}(X)$
+        \begin{align*}
+            Xv = \lambda_{max}(X)\vv 
+        \end{align*}
+        Then $\forall Y \in \mathbb{S}^{d}$:
+        \begin{align*}
+            \lambda_{max}(Y) = \max_{u}\{ \vu^{\top}Y\vu: \| \vu \| \le 1  \} \\
+            \ge \vv^{\top}X\vv \\
+            = \vv^{\top}X\vv + \vv^{\top}(Y-X)\vv \\
+            = \lambda_{max}(X) + \underbrace{Tr(\vv\vv^{\top}(Y-X))}_{\langle \vv \vv^{\top}, Y-X \rangle}\\
+            \Longrightarrow \vv \vv^{\top} \in \partial f(\vx)
+        \end{align*}
     \end{enumerate}
 \end{example}
 
+And for the first example 
+\begin{align*}
+    -\nabla f(x) \in N_{C}(x) \iff -\nabla f(x) \in \partial \delta_{C}(x) \iff 
+    0 \in \nabla f(x) + \partial \delta_{C}(x)
+\end{align*}
+which corresponds to 
+\begin{align*}
+    \min_{\vx \in \mathbb{E}}f(x) + \delta_{C}(x) \iff \min_{\vx \in C}f(x)
+\end{align*}
+
+\subsubsection{Properties of the subdiff set:}
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be a proper function. Then 
+    $\partial f(x)$ is closed and convex, $\forall \vx \in \mathbb{E}$
+\end{theorem}
+\begin{proof}
+    recall that: Fix $\vx$, define 
+    \begin{align*}
+        H_y:= \{ g \in \mathbb{E}^{*}: \, f(\vy) \ge f(\vx) + \langle g,\vy-\vx \rangle \}
+    \end{align*}
+    Notice that $H_y$ is closed and convex 
+    \begin{align*}
+        \partial f(\vx) = \bigcap_{\vy \in \mathbb{E}}H_y \quad \text{thus closed and convex.}
+    \end{align*}
+\end{proof}
+
+\begin{lemma}
+    Let $f: \mathbb{E} \to (-\infty,+\infty]$ be a proper function and assume that $dom(f)$ is convex.
+    Suppose that for any $\vx \in dom(f), \, \partial f(\vx) \neq \emptyset$. Then $f$ is convex.
+\end{lemma}
+\begin{proof}
+    Let $\vx, \vy \in dom(f), \, \alpha \in (0,1)$.
+    \begin{align*}
+        dom(f) \text{ is convex} \Longrightarrow z := (1-\alpha)\vx + \alpha \vy \in dom(f)\\
+        \Longrightarrow \exists g \in \partial f(\vz)
+    \end{align*}
+    since $\partial f(\vz) \neq \emptyset$
+
+    Since $g$ is a subgradient at $\vz$:
+    \begin{equation}
+        \begin{cases} 
+        f(\vx) \ge f(\vz) + \langle g, \vx -\vz \rangle, &  \\ 
+        f(\vy) \ge f(\vz) + \langle g, \vy -\vz \rangle, &   
+        \end{cases}
+    \end{equation}
+    \begin{align*}
+        (1-\alpha)f(\vx) + \alpha f(\vy) \ge f(\vz) + \langle  \rangle
+    \end{align*}
+\end{proof}
+
+\begin{remark}
+    The opposite doesn't hold in general.
+    \begin{equation}
+        f(\vx) :=
+        \begin{cases} 
+        -(x)^{-\frac{1}{2}}, & x \ge 0  \\ 
+        +\infty, &   o.w.
+        \end{cases}
+    \end{equation}
+    \begin{claim}
+        $f$ is convex but not subdiffrentiable at $x = 0$
+    \end{claim}
+    \begin{proof}
+        Suppose f.p.o.c $\exists g \in \partial f(0) \iff \forall \, y \in \mathbb{R}:
+        \, f(y) \ge gy$.
+
+        In particular, $\forall \, y \ge 0: -\sqrt{y} \ge gy$.
+
+        Consider 
+        \begin{enumerate}
+            \item $y = 1$
+            \item $y = \frac{1}{2g^{2}}$
+        \end{enumerate}
+    \end{proof}
+\end{remark}
+
+\begin{remark}
+    For the interior of the domain, the opposite holds.
+\end{remark}
 
 
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be a proper convex function and let $\vx \in intdom(f)$.
+    Then $\partial f(\vx) \neq \emptyset$ and $\partial f(\vx)$ is bounded.
+\end{theorem}
 
 
+\subsubsection{Relationship between dir der and subgradient}
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty, +\infty]$ be a proper convex function. Then for any 
+    $\vx \in intdom(f)$ and $\vz \in \mathbb{E}$
+    \begin{align*}
+        f'(\vx; \vz)  = \max_{g}\{ \langle g,\vz \rangle: \, g \in \partial f(\vx) \}
+    \end{align*}
+\end{theorem}
+\begin{proof}
+    Fix $\vx \in intdom(f)$ and $\vz \in \mathbb{E}$.
+    
+    \begin{align*}
+        \forall g \in \partial f(\vx),\, \forall \vy \in \mathbb{E}: \; 
+        f(\vy) \ge f(\vx) + \langle g, \vy-\vx \rangle\\
+        f'(\vx; \vz) = \lim_{\alpha \to 0^{+}} \frac{f(\vx + \alpha \vz) - f(\vx)}{\alpha} 
+        \ge \lim_{\alpha \to 0^{+}}
+    \end{align*}
+    Let $h(\vw) := f'(\vx; \vw)$. We know $h$ is convex, real-valued, positively homogeneous. $\Longrightarrow h$ is 
+    subdifferentiable on $\mathbb{E}$.
 
+    Let $\bar{g} \in \partial h(\vz)$. Then $\forall \vv \in \mathbb{E} \; \forall \alpha \ge 0$.
+    \begin{align*}
+        \alpha f'(\vx;\vv) = f'(\vx; \alpha \vv) = h(\alpha \vv) \\
+        \ge h(\vz) + \langle \bar{g}, \alpha \vv - \vz \rangle \\
+        = f'(\vx;\vz) + \langle \bar{g}, \alpha \vv - \vz \rangle
+    \end{align*}
+\end{proof}
 
+\DATE{Oct 2, 2024}
 
+Quick recap:
+\begin{enumerate}
+    \item $f'(\vx; \vz) = \lim_{x \to 0+}\frac{f(\vx + \alpha\vz) - f(\vx)}{\alpha}$
+    \item $\partial f(\vx) = \{ g \in \mathbb{E}^{*}: f(\vy) \ge f(\vx) + \langle g,\vy-\vx \rangle
+    ,\; \forall \vy \in \mathbb{E} \}$
+\end{enumerate}
 
+\subsection{Differentiability}
+\begin{definition}
+    Let $f: \mathbb{E} \to (-\infty, \infty]$ and $\vx \in intdom(f)$. The function $f$ is said to be 
+    (Frechel) differentiable at $\vx$ if $\exists g \in \mathbb{E}^{*}$ s.t.
+    \begin{align} \label{def:differentiability}
+        \lim_{\vh \to \vec{0}} \frac{f(\vx + \vh) - f(\vx) - \langle g,\vh \rangle}{\| \vh \| } = 0
+    \end{align}
+    The unique vector $g$ satisfying this limit is called the gradient of $f$ at $\vx$, and is denoted 
+    by $\nabla f(\vx)$.
 \end{definition}
 
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be proper and suppose that 
+    $f$ is differentiable at $\vx \in intdom(f)$. Then :
+    \begin{align*}
+        \forall \, \vz \in \mathbb{E}: \; 
+        f'(\vx; \vz) = \langle \nabla f(\vx), \vz \rangle
+    \end{align*}
+\end{theorem}
+\begin{proof}
+    It's trivial for $\vz = \vec{0}$, so assume that $\vz \neq \vec{0}$.
+
+    Now start with Eq.~\eqref{def:differentiability} with $h = \alpha \vz$ where $\vz$ is some unit 
+    vector, 
+    \begin{align*}
+        0 = \lim_{\alpha \to 0+}\frac{f(\vx + \alpha\vz) - f(\vx) - \langle \nabla f(\vx), \alpha \vz \rangle}
+        {\alpha} = \lim_{\alpha \to 0+}\frac{f(\vx + \alpha \vz) - f(\vx)}{\alpha} 
+            - \langle \nabla f(\vx), \vz \rangle
+    \end{align*}
+\end{proof}
+
+\begin{remark}
+    What is the gradient?
+    \begin{enumerate}
+        \item $\mathbb{E} = \mathbb{R}^{d}$, $\langle \vx, \vy \rangle = \vx^{\top}\vy$
+        Take $\vz = e_{i}$, we have 
+        \begin{align*}
+            \frac{\partial f}{\partial \vx_{i}}(\vx) = f'(\vx;e_{i}) = \nabla f(\vx)^{\top}e_i
+                =(\nabla f(\vx))_{i}
+        \end{align*}
+        since we know:
+        \begin{align*}
+            \nabla f(\vx) = D_{f}(\vx) = \begin{bmatrix} \frac{\partial f}{\partial \vx_1}(\vx) \\ 
+                \frac{\partial f}{\partial \vx_2}(\vx) \\ \vdots 
+                \\ 
+                \frac{\partial f}{\partial \vx_d}(\vx)
+             \end{bmatrix}
+        \end{align*}
+        \begin{align*}
+            f'(\vx; \vz) = D_{f}(\vx)^{\top}\vz = \sum_{i=1}^{d}\frac{\partial f(\vx)}{\partial \vx_{i}}\vz_{i}
+        \end{align*}
+    \end{enumerate}
+    \item $\mathbb{E} = \mathbb{R}^{d}$, $\langle \vx,\vy \rangle = \vx^{\top}M\vy$, 
+    $M \in \mathbb{S}^{d}$, $M$ is positive-definite.
+    \begin{align*}
+        (\nabla f(\vx))_{i} = \nabla f(\vx)^{\top}e_{i} = \nabla f(\vx)^{\top}MM^{-1}e_{i}\\
+        = \langle \nabla f(\vx), M^{-1}e_{i} \rangle\\
+        = f'(M; M^{-1}e_{i}) \\
+        = D_{f}(\vx)^{\top}M^{-1}e_{i}
+    \end{align*}
+    where $M = \sum_{i=1}^{d}\lambda_i u_i u_i^{\top}$
+    \item $\mathbb{E} = \mathbb{R}^{n \times d}$, $\langle X, Y \rangle = Tr(X^{\top}Y)$
+    \begin{align*}
+        \nabla f(X) = D_{f}(X) = 
+    \end{align*}
+    \item $\mathbb{E} = \mathbb{R}^{n \times d}$, $\langle X,Y \rangle = 
+    Tr(X^{\top}MY)$, $M \in \mathbb{S}^{d}$, M is PD. Then $\nabla f(\vx) = M^{-1}D_{f}(X)$
+\end{remark}
+
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty, \infty]$ be a proper convex function and let 
+    $\vx \in intdom(f)$. If $f$ is differentiable at $\vx$, then $\partial f(\vx) = \{ \nabla f(\vx) \}$.
+    Conversely, if $f$ has unique subgradient at $\vx$, then it is differentiable at $\vx$ and 
+    $\partial f(\vx) = \{ \nabla f(\vx) \}$.
+\end{theorem}
+\begin{proof}
+    \begin{enumerate}
+        \item ($\Longrightarrow$) 
+        $f$ is differentiable at $\vx \in intdom(f)$. $f$ is proper, convex and $\vx \in intdom(f)
+        \Longrightarrow \partial f(\vx) \neq \emptyset$. let $g \in \partial f(\vx)$. To show:
+        $g = \nabla f(\vx)$. By the (MF), we have:
+        \begin{align*}
+            \langle \nabla f(\vx), \vz \rangle = 
+                f'(\vx; \vz) = \max_{\tilde{g} \in \partial f(\vx)}\langle \tilde{g}, \vz \rangle
+                \ge \langle g, \vz \rangle \quad \forall  \vz \in \mathbb{E}\\
+            \Longrightarrow \langle g - \nabla f(\vx), \vz \rangle \le 0 \quad \forall \, \vz \in \mathbb{E}
+        \end{align*}
+        We can take $\vz = g - \nabla f(\vx)$ or we can think of the dual norm:
+        \begin{align*}
+            \sup_{\vz \in \mathbb{E}, \| \vz \|\le 1 }\langle g - \nabla f(\vx), \vz \rangle \le 0\\
+            \Longrightarrow \| g - \nabla f(\vx) \| _{*} = 0
+        \end{align*}
+    \end{enumerate}
+\end{proof}
+
+Why does subgradient matter?
+\begin{definition}[Locally Lipshitz continuous]
+    $\forall $ compact $C \subseteq \mathbb{E}$, $\exists L \in (0,\infty)$ s.t.
+    \begin{align*}
+        \forall \vx, \vy \in C: |f(\vx) - f(\vy)| \le L\| \vx - \vy \| 
+    \end{align*}
+\end{definition}
+\begin{theorem}[Rademacher's theorem]
+    If $f$ is locally Lipshitz continuous, then $f$ is differentiable a.e..
+\end{theorem}
+Even though this theorem holds, we still need to think about non-differentiability by some reasons 
+about like critical points...
+\begin{definition}[Clarke's subdiff]
+    
+\end{definition}
+For every non-differentiable point, we have a range of domain where we have gradients. We take 
+convex combination of them.
+
+\subsection{Subgradient of Lipschitz function}
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ be proper and convex. Suppose that $C \subseteq intdom(f)$.
+    Consider the following two statements:
+    \begin{enumerate}
+        \item $|f(\vx) - f(\vy)| \le L\| \vx - \vy \|, \quad \forall \, \vx, \vy \in C$
+        \item $\| g \|_{*} \le L\quad \forall \vx \in C, g \in \partial f(\vx)$
+    \end{enumerate}
+    Then
+    \begin{enumerate}
+        \item (ii.) $\Longrightarrow$ (i.).
+        \item If $C$ is open, then $(i.) \iff (ii.)$.
+    \end{enumerate}
+\end{theorem}
+
+
+
+
+\DATE{Oct 4, 2024}
+
+\section{Conjugate Function}
+\begin{definition}
+    Let $f: \mathbb{E} \to [-\infty,\infty]$. The function $f^{*}: \mathbb{E}^{*} \to [-\infty,\infty]$,
+    defined by 
+    \begin{align*}
+        f^{*}(\vy) = \sup_{\vx \in \mathbb{E}}\{ \langle \vy,\vx \rangle - f(\vx) \} \quad \forall \vy \in \mathbb{E}^{*}
+    \end{align*}
+    is called the conjugate function of $f$.
+\end{definition}
+\begin{remark}
+    There are some other names for it: convex conjugate, Fenchel conjugate, legendre transform, Fenchel
+    -Legendre transform.
+\end{remark}
+
+\begin{example}
+    Let $f = \delta_{C}$.
+    \begin{equation} \delta_{C}(\vx) = 
+        \begin{cases} 
+        0, & \vx  \in C  \\ 
+        +\infty, & \vx  \notin C 
+        \end{cases}
+    \end{equation}
+    where $C \subseteq  \mathbb{E}, C \neq \emptyset$.
+
+    $\forall \vy \in \mathbb{E}^{*}$, we have
+    \begin{align*}
+        f^{*}(\vy) =\;& \sup_{\vx \in \mathbb{E}}\{ \langle \vy,\vx \rangle - \delta_{C}(\vx) \}\\
+        = \;& \sup_{\vx \in C}\langle \vy,\vx \rangle = \sigma_{C}(\vy)
+    \end{align*}
+\end{example}
+
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty, \infty]$. Then $f^{*}$ is closed and convex.
+\end{theorem}
+
+\begin{example}
+    $f(\vx) = \frac{1}{2}\| \vx \| ^{2} + \delta_{C}(\vx)$ where $\| \cdot \| = \sqrt{\langle \cdot ,\cdot  \rangle} $
+
+    Then we have:
+    \begin{align*}
+        f^{*}(\vy) = \sup_{\vx \in \mathbb{E}}\{ \langle \vy, \vx \rangle - \frac{1}{2}\| \vx \|^{2}  
+            - \delta_{C}(\vx)\}\\
+        = \sup_{\vx \in C}\{ \langle \vy, \vx \rangle - \frac{1}{2}\| \vx \|^{2} + \frac{1}{2}\| \vy \| ^{2} \}\\
+        = \frac{1}{2}\| \vy \| ^{2} + \sup_{\vx \in C}\{ -\frac{1}{2}\| \vx - \vy \|^{2}  \}\\
+        = \frac{1}{2}\| \vy \| ^{2} - \frac{1}{2}d_{C}^{2}(\vy)
+    \end{align*}
+\end{example}
+
+\begin{theorem}[Conjugate of proper convex functions are proper convex]
+    Let $f: \mathbb{E} \to (-\infty,\infty] $ be proper and convex. Then 
+    $f^{*}: \mathbb{E}^{*} \to (-\infty,\infty]$ is proper.
+\end{theorem}
+\begin{proof}
+    $\forall \vy \in \mathbb{E}^{*}: \; f^{*}(\vy) > -\infty$.
+    We know $f \text{ is } proper \Longrightarrow \exists \hat{\vx} \text{ s.t. } f(\hat{\vx}) < \infty$.
+    \begin{align*}
+        f^{*}(\vy   ) = \sup_{\vx \in \mathbb{E}}\{ \langle \vx,\vy \rangle - f(\vx) \} 
+            \ge \langle \hat{\vx},y \rangle - f(\hat{\vx}) > -\infty
+    \end{align*}
+    \begin{lemma}
+        For any proper convex function, $\exists \vx \in dom(f)$ s.t. 
+        $\partial f(\vx) \neq \emptyset$.
+    \end{lemma}
+    $\Longrightarrow$ we can choose some $\vx \in dom(f)$ and $g \in \partial f(\vx)$.
+    \begin{align*}
+        \forall  \vz \in \mathbb{E}: f(\vz) \ge f(\vx) + \langle g, \vz - \vx \rangle\\
+        \Longrightarrow \langle g,\vx \rangle - f(\vx) \ge \langle g,\vz \rangle - f(\vz)
+    \end{align*}
+    We have 
+    \begin{align*}
+        f^{*}(g) = \sup_{\vz \in \mathbb{E}}\{ \langle g,\vz \rangle - f(\vz)\} 
+            \le \langle g,\vx \rangle -f(\vx) < \infty
+    \end{align*}
+\end{proof}
+
+\begin{theorem}[Fenchel Inequality]
+    Given $f: \mathbb{E} \to (-\infty,\infty], f$ is proper.
+
+    $\forall \vx \in \mathbb{E}, \vy \in \mathbb{E}^{*}$:
+    \begin{align*}
+        f(\vx) + f^{*}(\vy) \ge \langle \vx ,\vy\rangle 
+        \iff f^{*}(\vy) \ge \langle \vx,\vy \rangle - f(\vx)
+    \end{align*}
+\end{theorem}
+
+\subsection{The Biconjugate}
+$(\mathbb{E}^{**} = \mathbb{E})$
+
+\begin{definition}
+    \begin{align*}
+        f^{**}(\vx) = \sup_{\vy \in \mathbb{E}^{*}}\{ \langle \vy,\vx \rangle - f^{*}(\vy) \}
+    \end{align*}
+\end{definition}
+
+\begin{lemma}[$f^{** }\le f$]
+    Let $f: \mathbb{E} \to [-\infty,\infty]$. Then $f(\vx) \ge f^{**}(\vx), \; \forall \vx \in \mathbb{E}$.
+\end{lemma}
+\begin{proof}
+    $\forall \vx \in \mathbb{E}, \forall \vy \in \mathbb{E}^{*}$
+    \begin{align*}
+        f^{*}(\vy) \ge \langle \vy,\vx \rangle - f(\vx) \\
+        \iff f(\vx) \ge \langle \vy, \vx \rangle - f^{*}(\vy) \\
+        f(\vx) \ge \sup_{\vy \in \mathbb{E}^{*}}\{ \langle \vy,\vx \rangle - f^{*}(\vy) \}
+            = f^{**}(\vx)
+    \end{align*}
+\end{proof}
+
+\begin{theorem}[$f^{**} = f$ whenever $f$ is proper, closed and convex]
+    
+\end{theorem}
+
+\begin{example}
+    \begin{enumerate}
+        \item Conjugate of support functions: 
+        $C \subseteq \mathbb{E}, \, C \neq \emptyset$.
+        $\underbrace{cl}_{\text{closure}}(\underbrace{conv(C)}_{\text{convex hull of }C})$ is closed 
+        and convex.
+        \begin{align*}
+            \underbrace{\delta_{cl(conv(C))}}_{\text{closed and convex fn}} \equiv 
+                \delta_{cl(conv(C))} \equiv (\delta_{cl(conv(C))}^{*})^{*}\\
+            = \sigma_{cl(conv(C))}^{*} = \sigma_{C}^{*}
+        \end{align*}
+        \item ($\mathbb{E} = \mathbb{R}^{d}$)
+        \begin{align*}
+            f(\vx) &= \max_{1 \le i \le d} x_{i} \\
+            &= \max_{\vv \in \Delta_{d}}\vv^{\top}\vx = \sigma_{\Delta_{d}}(\vx)
+        \end{align*}
+        where $\Delta_{d} = \{ \vv \ge 0:\1^{\top}\vv = 1 \}$.
+
+        We have 
+        \begin{align*}
+            f^{*}(\vy) = \sigma_{\Delta_{d}}^{*}(\vy) = \delta_{\Delta_{d}}(\vy)
+        \end{align*}
+        \item $f(\vx) = \frac{1}{2}\| \vx \|^{2} - \frac{1}{2}d_{C}^{2}(\vx) $, where 
+        $\| \cdot  \| = \sqrt{\langle \cdot ,\cdot  \rangle} , \, C \neq \emptyset, C \subseteq \mathbb{E}$,
+        $C$ is closed and convex, we have 
+        \begin{align*}
+            f(\vx) = g^{*}(\vx), \; g(\vy) = \frac{1}{2}\| \vy \| ^{2} + \delta_{C}(\vy)
+        \end{align*}
+        where $g(\vy)$ is closed and convex, so 
+        \begin{align*}
+            f^{*}(\vy) = g^{**}(\vy) = g(\vy)
+        \end{align*}
+    \end{enumerate}
+\end{example}
+
+\subsection{Conjugate Calculus Rules:}
+
+\begin{theorem}[Conjugate of a separable function]
+    Let $g: \mathbb{E}_1 \times \mathbb{E}_2 \times \cdots \times \mathbb{E}_m \to (-\infty,\infty]$ be 
+    given by $g(\vx_1,\vx_2, \ldots ,\vx_m) = \sum_{i=1}^{m}f_i(\vx_{i}),\, \vx_{i} \in \mathbb{E}_i$
+    where $f_i: \mathbb{E}_i \to (-\infty,\infty],\, i \in \{ 1, \ldots ,m \}$.
+    Then:
+    \begin{align*}
+        g^{*}(\vy_1, \ldots ,\vy_{m}) = \sum_{i=1}^{m}f_{i}^{*}(\vy_{i}), \; \forall \,\vy_{i} \in \mathbb{E}_{i},
+            i \in \{ 1, \ldots ,m \}
+    \end{align*}
+\end{theorem}
+
+\begin{theorem}[Conjugate of $f(A(\vx - \va)) + \langle \vb,\vx \rangle + c$]
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ and let $A: \mathbb{V} \to \mathbb{E}$ be an invertible 
+    linear transformation. $\va \in \mathbb{V},\, \vb \in \mathbb{V}^{*},\, c\in \mathbb{R}$. 
+    Then the conjugate of $f(A(\vx - \va)) + \langle \vb, \vx \rangle + c := g(\vx)$ is 
+    \begin{align*}
+        g^{*}(\vx) = f^{*}((A^{\top})^{-1}(\vy - \vb)) + \langle \va, \vy \rangle - c - \langle \va, \vb \rangle,
+        \; \forall \vy \in \mathbb{V}^{*}
+    \end{align*}
+\end{theorem}
+\begin{proof}
+    Let $\vz = A(\vx - \va), \, \vx = \va + A^{-1}(\vz)$. We have 
+    \begin{align*}
+        g^{*}(\vy) = \sup_{\vx \in \mathbb{V}}\{ \langle \vy,\vx \rangle - f(A(\vx - \va)) - 
+        \langle \vb, \vx \rangle - c \} \\
+        = -c + \langle \va, \vy - \vb \rangle + 
+            \sup_{\vz \in \mathbb{V}}\{ \langle A^{-1}(\vz), \vy - \vb \rangle - f(\vz) \}\\
+        = \sup_{\vz \in \mathbb{V}}\{ \langle \vz, (A^{-1})^{\top}(\vy - \vb) \rangle - f(\vz) \}\\
+        = f^{*}((A^{\top})^{-1}(\vy - \vb))
+    \end{align*}
+\end{proof}
+
+\begin{theorem}
+    Let $f: \mathbb{E} \to (-\infty,\infty]$ and let $\alpha > 0$
+    \begin{enumerate}
+        \item let $g(\vx) = \alpha f(\vx)$, we have 
+        \begin{align*}
+            g^{*}(\vy) = \alpha f^{*}(\frac{\vy}{\alpha}), \; \vy \in \mathbb{E}^{*}
+        \end{align*}
+        \item let $h(\vx) = \alpha f(\frac{\vx}{\alpha})$, we have 
+        \begin{align*}
+            h^{*}(\vy) = \alpha f^{*}(\vy), \; \vy \in \mathbb{E}^{*}
+        \end{align*}
+    \end{enumerate}
+\end{theorem}
 
 
 
